@@ -42,8 +42,6 @@ async function monitorContract() {
             let totalPrice;
 
             for (let log of receipt.logs) {
-                console.log('log')
-                console.log(log);
                 const logAddress = log.address.toLowerCase();
 
                 // if non-ETH transaction
@@ -84,10 +82,10 @@ async function monitorContract() {
                 tx: https://etherscan.io/tx/${data.transactionHash}
                 `);
             } else {
-                console.log('receipt');
-                console.log(receipt);
                 console.log('data');
                 console.log(data);
+                console.log(`from: ${data.returnValues.from}`);
+                console.log(`to: ${data.returnValues.to}`);
                 tweet(`${_.get(tokenData, 'assetName', `Crypts and Caverns #` + tokens[0])} bought for ${totalPrice} ${currency.name} @cryptsncaverns ${market.site}${process.env.CONTRACT_ADDRESS}/${tokens[0]}`);
             }
         })
