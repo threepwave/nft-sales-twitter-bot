@@ -10,18 +10,34 @@ const twitterConfig = {
 const twitterClient = new twit(twitterConfig);
 
 // Tweet a text-based status
-async function tweet(tweetText) {
+async function tweet(tweetText, tweetImage) {
     const tweet = {
         status: tweetText,
     };
 
-    twitterClient.post('statuses/update', tweet, (error, tweet, response) => {
-        if (!error) {
-            console.log(`Successfully tweeted: ${tweetText}`);
+    twitterClient.post('media/upload', {media_data: tweetImage.toString('base64')}, function(error, media, response) {
+        if (!error) {      
+          // If successful, a media object will be returned.
+          // Lets tweet it
+          var status = {
+            status: tweetText,
+            media_ids: media.media_id_string // Pass the media id string
+          }
+      
+          twitterClient.post('statuses/update', status, (error, tweet, response) => {
+                if (!error) {
+                    console.log(`Successfully tweeted: ${tweetText}`);
+                } else {
+                    console.error(error);
+                }
+            });
+      
         } else {
             console.error(error);
         }
-    });
+      });
+
+    
 }
 
 

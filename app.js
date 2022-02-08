@@ -9,10 +9,31 @@ const { transferEventTypes, saleEventTypes } = require('./log_event_types.js');
 const { tweet } = require('./tweet');
 const abi = require('./abi.json');
 
+const { svg } = require('./svg')
+
+
 // connect to Alchemy websocket
 const web3 = createAlchemyWeb3(`wss://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`);
 
+
 async function monitorContract() {
+    /*
+    const response = await axios.get(`https://api.opensea.io/api/v1/asset/${process.env.CONTRACT_ADDRESS}/503`, {
+        headers: {
+            'X-API-KEY':'8ff8712e6c1f43aeb25ce6d9c56926fd'
+        }
+    });
+
+    // console.log(response);/
+    console.log(response.data.image_url);
+    const url = `https://storage.opensea.io/files/56573c8bb7d2cf04b122525604be0e93.svg`;
+    const image = await svg(url);
+    console.log(image);
+
+    // tweet(`#50 https://opensea.io/assets/0x86f7692569914B5060Ef39aAb99e62eC96A6Ed45/3364`, image);
+
+    */
+
     const contract = new web3.eth.Contract(abi, process.env.CONTRACT_ADDRESS);
 
     contract.events.Transfer({})
@@ -74,21 +95,23 @@ async function monitorContract() {
             // retrieve metadata for the first (or only) ERC21 asset sold
             const tokenData = await getTokenData(tokens[0]);
 
+            // construct image from opensea svg
+            const image_url = _.get(tokenData, 'image_url', null);
+            const image = await svg(image_url); // Convert url to base64 image buffer
+
             // if more than one asset sold, link directly to etherscan tx, otherwise the marketplace item
             if (tokens.length > 1) {
                 tweet(`
                 ${_.get(tokenData, 'assetName', `#` + tokens[0])} & other assets bought for ${totalPrice} ${currency.name}
 
                 tx: https://etherscan.io/tx/${data.transactionHash}
-                `);
+                `, image);
             } else {
-                console.log('receipt');
-                console.log(receipt);
                 console.log('data');
                 console.log(data);
-                console.log('log')
-                console.log(log);
-                tweet(`${_.get(tokenData, 'assetName', `Crypts and Caverns #` + tokens[0])} bought for ${totalPrice} ${currency.name} @cryptsncaverns ${market.site}${process.env.CONTRACT_ADDRESS}/${tokens[0]}`);
+                console.log(`from: ${data.returnValues.from}`);
+                console.log(`to: ${data.returnValues.to}`);
+                tweet(`${_.get(tokenData, 'assetName', `Crypts and Caverns #` + tokens[0])} bought for ${totalPrice} ${currency.name} @cryptsncaverns ${market.site}${process.env.CONTRACT_ADDRESS}/${tokens[0]}`, image);
             }
         })
         .on('changed', (event) => {
@@ -98,7 +121,7 @@ async function monitorContract() {
             // if the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
             console.error(error);
             console.error(receipt);
-        });
+        }); 
 }
 
 async function getTokenData(tokenId) {
@@ -114,7 +137,8 @@ async function getTokenData(tokenId) {
 
         // just the asset name for now, but retrieve whatever you need
         return {
-            'assetName': _.get(data, 'name')
+            'assetName': _.get(data, 'name'),
+            'image_url': _.get(data, 'image_url')
         };
     } catch (error) {
         console.error(error);
@@ -122,4 +146,4 @@ async function getTokenData(tokenId) {
 }
 
 // initate websocket connection
-monitorContract();
+monitorContract(); 
