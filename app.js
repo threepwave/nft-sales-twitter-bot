@@ -10,13 +10,31 @@ const { tweet } = require('./tweet');
 const abi = require('./abi.json');
 
 const { svg } = require('./svg')
+const { discord } = require('./discord');
 
 
 // connect to Alchemy websocket
 const web3 = createAlchemyWeb3(`wss://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`);
 
-
 async function monitorContract() {
+    /*
+    // retrieve metadata for the first (or only) ERC21 asset sold
+    const tokenData = await getTokenData(601);
+
+    // construct metadata
+    const name = _.get(tokenData, 'assetName', null);
+    const traits = _.get(tokenData, 'traits', null);
+
+    // construct image from opensea svg
+    const image_url = _.get(tokenData, 'image_url', null);
+    const image = await svg(image_url); // Convert url to base64 image buffer
+    const token = 601;
+    const url = 'https://opensea.io/assets/0x86f7692569914b5060ef39aab99e62ec96a6ed45/5057'
+    const text = 'Purchased for 12431 ETH'
+    
+    discord(text, name, 601, url, image, traits); 
+    */
+
     const contract = new web3.eth.Contract(abi, process.env.CONTRACT_ADDRESS);
 
     contract.events.Transfer({})
@@ -94,7 +112,18 @@ async function monitorContract() {
                 console.log(data);
                 console.log(`from: ${data.returnValues.from}`);
                 console.log(`to: ${data.returnValues.to}`);
-                tweet(`${_.get(tokenData, 'assetName', `Crypts and Caverns #` + tokens[0])} bought for ${totalPrice} ${currency.name} ${market.site}${process.env.CONTRACT_ADDRESS}/${tokens[0]}`, image);
+
+                // construct metadata from opensea api
+                const name = _.get(tokenData, 'assetName', `Crypts and Caverns #` + tokens[0])
+                const traits = _.get(tokenData, 'traits', null);
+                const url = `${market.site}${process.env.CONTRACT_ADDRESS}/${tokens[0]}`
+
+                // convert image from SVG -> PNG
+                const image_url = _.get(tokenData, 'image_url', null);
+                const image = await svg(image_url); // Convert url to base64 image buffer
+                
+                tweet(`${name} bought for ${totalPrice} ${currency.name} ${url}`, image);                
+                discord(`Purchased for ${totalPrice} ${currency.name}`, name, tokens[0], `${market.site}${process.env.CONTRACT_ADDRESS}/${tokens[0]}`, image, traits); 
             }
         })
         .on('changed', (event) => {
@@ -105,7 +134,7 @@ async function monitorContract() {
             console.error(error);
             console.error(receipt);
         }); 
-}
+} 
 
 async function getTokenData(tokenId) {
     try {
@@ -121,7 +150,8 @@ async function getTokenData(tokenId) {
         // just the asset name for now, but retrieve whatever you need
         return {
             'assetName': _.get(data, 'name'),
-            'image_url': _.get(data, 'image_url')
+            'image_url': _.get(data, 'image_url'),
+            'traits': _.get(data, 'traits')
         };
     } catch (error) {
         console.error(error);
