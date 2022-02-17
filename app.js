@@ -16,24 +16,11 @@ const { discord } = require('./discord');
 // connect to Alchemy websocket
 const web3 = createAlchemyWeb3(`wss://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`);
 
+// Image URL setup for self-hosted PNGs
+const cdn = 'https://img.cryptsandcaverns.com/img/'
+
+
 async function monitorContract() {
-    /*
-    // retrieve metadata for the first (or only) ERC21 asset sold
-    const tokenData = await getTokenData(601);
-
-    // construct metadata
-    const name = _.get(tokenData, 'assetName', null);
-    const traits = _.get(tokenData, 'traits', null);
-
-    // construct image from opensea svg
-    const image_url = _.get(tokenData, 'image_url', null);
-    const image = await svg(image_url); // Convert url to base64 image buffer
-    const token = 601;
-    const url = 'https://opensea.io/assets/0x86f7692569914b5060ef39aab99e62ec96a6ed45/5057'
-    const text = 'Purchased for 12431 ETH'
-    
-    discord(text, name, 601, url, image, traits); 
-    */
 
     const contract = new web3.eth.Contract(abi, process.env.CONTRACT_ADDRESS);
 
@@ -120,10 +107,13 @@ async function monitorContract() {
 
                 // convert image from SVG -> PNG
                 const image_url = _.get(tokenData, 'image_url', null);
-                const image = await svg(image_url); // Convert url to base64 image buffer
+                const image_svg = await svg(image_url); // Convert url to base64 image buffer for Twitter
                 
-                tweet(`${name} bought for ${totalPrice} ${currency.name} ${url}`, image);                
-                discord(`Purchased for ${totalPrice} ${currency.name}`, name, tokens[0], `${market.site}${process.env.CONTRACT_ADDRESS}/${tokens[0]}`, image, traits); 
+                // Attach png url for discord attachments (has issues with svg embeds)
+                const image_png = `${cdn}${tokens[0]}.png`
+                
+                tweet(`${name} bought for ${totalPrice} ${currency.name} ${url}`, image_svg);                
+                discord(`Purchased for ${totalPrice} ${currency.name}`, name, tokens[0], `${market.site}${process.env.CONTRACT_ADDRESS}/${tokens[0]}`, image_png, traits); 
             }
         })
         .on('changed', (event) => {
