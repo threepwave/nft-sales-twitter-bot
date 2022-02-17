@@ -19,20 +19,20 @@ async function discord(text, name, tokenId, url, image, traits) {
             {
                 title: name,
                 url: url,
+                image: {    
+                    url: image
+                },
                 description: text,
                 fields: fields
             }
         ]
-
-        // Insert image embed
-        const img = formatImage(image);
 
         // Post text to discord webhook URL
         const message = await axios.post(discordConfig.webhook_url, 
             {
                 content: null,
                 embeds: metadata,
-                file: img,
+                // file: img,
             }
         );
     } catch (error) {
@@ -90,12 +90,6 @@ function assembleFields(traits) {
     ]
 
     return fields;
-}
-
-function formatImage(image) {
-    // Converts an image buffer to a base64 encoded string
-    let img = 'data:image/png;base64,' + image.toString('base64');
-    return(img);
 }
 
 module.exports = {
