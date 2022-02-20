@@ -95,10 +95,9 @@ async function monitorContract() {
                 tx: https://etherscan.io/tx/${data.transactionHash}
                 `, image);
             } else {
-                console.log('data');
-                console.log(data);
-                console.log(`from: ${data.returnValues.from}`);
-                console.log(`to: ${data.returnValues.to}`);
+                // Add 'from' and 'to' in the future
+                // console.log(`from: ${data.returnValues.from}`);
+                // console.log(`to: ${data.returnValues.to}`);
 
                 // construct metadata from opensea api
                 const name = _.get(tokenData, 'assetName', `Crypts and Caverns #` + tokens[0])
