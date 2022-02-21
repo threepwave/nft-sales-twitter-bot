@@ -29,6 +29,7 @@ async function monitorContract() {
             console.log(subscriptionId);
         })
         .on('data', async (data) => {
+            console.log(`Data received: ${data.transactionHash}`);
             const receipt = await web3.eth.getTransactionReceipt(data.transactionHash);
 
             const recipient = receipt.to.toLowerCase();
@@ -86,6 +87,9 @@ async function monitorContract() {
             // construct image from opensea svg
             const image_url = _.get(tokenData, 'image_url', null);
             const image = await svg(image_url); // Convert url to base64 image buffer
+
+            // @HACK - Alert when a new sale happens
+            console.log(`https://etherscan.io/tx/${data.transactionHash}`);
 
             // if more than one asset sold, link directly to etherscan tx, otherwise the marketplace item
             if (tokens.length > 1) {
