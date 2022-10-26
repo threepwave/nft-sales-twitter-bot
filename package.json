@@ -1,6 +1,6 @@
 {
   "name": "nft-sales-twitter-bot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "app.js",
   "scripts": {
@@ -18,9 +18,11 @@
   "homepage": "https://github.com/dsgriffin/nft-sales-twitter-bot#readme",
   "dependencies": {
     "@alch/alchemy-web3": "^1.1.9",
+    "async-retry": "^1.3.3",
     "axios": "^0.24.0",
+    "ethers": "^5.5.4",
     "lodash": "^4.17.21",
-    "sharp": "^0.30.0",
+    "sharp": "^0.31.1",
     "twit": "^2.2.11"
   }
 }
