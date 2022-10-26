@@ -1,6 +1,7 @@
 // external
 const { createAlchemyWeb3 } = require("@alch/alchemy-web3");
-const axios = require("axios");
+const { ethers } = require("ethers");
+const retry = require("async-retry");
 const _ = require("lodash");
 
 // local
@@ -18,6 +19,9 @@ const { discord } = require("./discord");
 const web3 = createAlchemyWeb3(
   `wss://eth-mainnet.alchemyapi.io/v2/${process.env.ALCHEMY_API_KEY}`
 );
+
+// sometimes web3.js can return duplicate transactions in a split second, so
+let lastTransactionHash;
 
 // Image URL setup for self-hosted PNGs
 const cdn = "https://img.cryptsandcaverns.com/img/";
