@@ -1,5 +1,7 @@
 # NFT Sales Twitter Bot 🤖
 
+This is a fork.
+
 This was made to succeed my [Opensea Sales Twitter Bot](https://github.com/dsgriffin/opensea-sales-twitter-bot) repo; while relying on the OpenSea Events API is simpler, it doesn't include any NFT sales happening in other, newer marketplaces.
 
 So, we need to monitor & process Ethereum event logs for ERC-721 token transactions directly, before posting any sales to Twitter.
