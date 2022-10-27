@@ -132,6 +132,8 @@ async function monitorContract() {
         const tokenData = await getTokenData(tokens[0]);
 
         // construct image from opensea svg
+        console.log("tokenData:");
+        console.log(tokenData);
         const image_url = _.get(tokenData, "image_url", null);
         const image = await svg(image_url); // Convert url to base64 image buffer
 
