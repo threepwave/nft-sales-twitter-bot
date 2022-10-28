@@ -126,6 +126,8 @@ async function monitorContract() {
         }
 
         // remove any dupes
+        console.log("tokens pre-uniq:");
+        console.log(tokens);
         tokens = _.uniq(tokens);
 
         // retrieve metadata for the first (or only) ERC721 asset sold
@@ -134,7 +136,7 @@ async function monitorContract() {
         // construct image from opensea svg
         console.log("tokenData:");
         console.log(tokenData);
-        const image_url = _.get(tokenData, "image_url", null);
+        const image_url = _.get(tokens[0], "image_url", null);
         const image = await svg(image_url); // Convert url to base64 image buffer
 
         // @HACK - Alert when a new sale happens
@@ -168,16 +170,12 @@ async function monitorContract() {
           const traits = _.get(tokenData, "traits", null);
           const url = `${market.site}${process.env.CONTRACT_ADDRESS}/${tokens[0]}`;
 
-          // convert image from SVG -> PNG
-          const image_url = _.get(tokenData, "image_url", null);
-          const image_svg = await svg(image_url); // Convert url to base64 image buffer for Twitter
-
           // Attach png url for discord attachments (has issues with svg embeds)
           const image_png = `${cdn}${tokens[0]}.png`;
 
           tweet(
             `${name} bought for ${totalPrice} ${currency.name} ${url}`,
-            image_svg
+            image_png
           );
           discord(
             `Purchased for ${totalPrice} ${currency.name}`,
