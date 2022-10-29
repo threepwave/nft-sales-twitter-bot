@@ -12,7 +12,6 @@ const { transferEventTypes, saleEventTypes } = require("./log_event_types.js");
 const { tweet } = require("./tweet");
 const abi = require("./abi.json");
 
-const { svg } = require("./svg");
 const { discord } = require("./discord");
 
 // connect to Alchemy websocket
@@ -126,21 +125,18 @@ async function monitorContract() {
         }
 
         // remove any dupes
-        console.log("tokens pre-uniq:");
-        console.log(tokens);
         tokens = _.uniq(tokens);
+        console.log("tokens:");
+        console.log(tokens);
 
         // retrieve metadata for the first (or only) ERC721 asset sold
         const tokenData = await getTokenData(tokens[0]);
 
-        // construct image from opensea svg
-        console.log("tokenData:");
-        console.log(tokenData);
-        const image_url = _.get(tokens[0], "image_url", null);
-        const image = await svg(image_url); // Convert url to base64 image buffer
-
         // @HACK - Alert when a new sale happens
         console.log(`https://etherscan.io/tx/${transactionHash}`);
+
+        // Construct the image url
+        const image_png = `${cdn}${tokens[0]}.png`;
 
         // if more than one asset sold, link directly to etherscan tx, otherwise the marketplace item
         if (tokens.length > 1) {
@@ -154,7 +150,7 @@ async function monitorContract() {
 
                 tx: https://etherscan.io/tx/${transactionHash}
                 `,
-            image
+            image_png
           );
         } else {
           // Add 'from' and 'to' in the future
@@ -171,7 +167,6 @@ async function monitorContract() {
           const url = `${market.site}${process.env.CONTRACT_ADDRESS}/${tokens[0]}`;
 
           // Attach png url for discord attachments (has issues with svg embeds)
-          const image_png = `${cdn}${tokens[0]}.png`;
 
           tweet(
             `${name} bought for ${totalPrice} ${currency.name} ${url}`,
