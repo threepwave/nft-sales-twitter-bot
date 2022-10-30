@@ -23,8 +23,6 @@ async function tweet(tweetText, tweetImage) {
       Buffer.from(response.data, "binary").toString("base64")
     );
 
-  console.log("image:");
-  console.log(image);
   twitterClient.post(
     "media/upload",
     { media_data: image },

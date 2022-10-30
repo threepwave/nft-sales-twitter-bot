@@ -108,6 +108,12 @@ async function monitorContract() {
               []
             );
 
+            console.log("decodedLogData");
+            console.log(decodedLogData);
+
+            console.log("market:");
+            console.log(market);
+
             if (market.name == "Opensea ⚓️") {
               totalPrice += getSeaportSalePrice(decodedLogData);
             } else if (market.name == "X2Y2 ⭕️") {
@@ -126,8 +132,6 @@ async function monitorContract() {
 
         // remove any dupes
         tokens = _.uniq(tokens);
-        console.log("tokens:");
-        console.log(tokens);
 
         // retrieve metadata for the first (or only) ERC721 asset sold
         const tokenData = await getTokenData(tokens[0]);
@@ -151,6 +155,15 @@ async function monitorContract() {
                 tx: https://etherscan.io/tx/${transactionHash}
                 `,
             image_png
+          );
+
+          discord(
+            `Purchased for ${totalPrice} ${currency.name}`,
+            name,
+            tokens[0],
+            `${market.site}${process.env.CONTRACT_ADDRESS}/${tokens[0]}`,
+            image_png,
+            traits
           );
         } else {
           // Add 'from' and 'to' in the future
