@@ -11,7 +11,8 @@ const discordConfig = {
   webhook_url: process.env.DISCORD_WEBHOOK,
 };
 
-async function discord(text, name, tokenId, url, image, traits) {
+// async function discord(text, name, tokenId, url, image, traits) {
+async function discord(text, name, tokenId, url, image) {
   try {
     console.log("discord:");
     console.log(text);
@@ -19,9 +20,8 @@ async function discord(text, name, tokenId, url, image, traits) {
     console.log(tokenId);
     console.log(url);
     console.log(image);
-    console.log(traits);
     // Opensea Property Fields
-    const fields = assembleFields(traits);
+    // const fields = assembleFields(traits);
     const metadata = [
       {
         title: name,
@@ -30,7 +30,7 @@ async function discord(text, name, tokenId, url, image, traits) {
           url: image,
         },
         description: text,
-        fields: fields,
+        // fields: fields,
       },
     ];
 

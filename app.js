@@ -114,9 +114,9 @@ async function monitorContract() {
             console.log("market:");
             console.log(market);
 
-            if (market.name == "Opensea ⚓️") {
+            if (market.name.includes("Opensea")) {
               totalPrice += getSeaportSalePrice(decodedLogData);
-            } else if (market.name == "X2Y2 ⭕️") {
+            } else if (market.name.includes("X2Y2")) {
               totalPrice += ethers.utils.formatUnits(
                 decodedLogData.amount,
                 currency.decimals
@@ -162,8 +162,8 @@ async function monitorContract() {
             name,
             tokens[0],
             `${market.site}${process.env.CONTRACT_ADDRESS}/${tokens[0]}`,
-            image_png,
-            traits
+            image_png
+            // traits
           );
         } else {
           // Add 'from' and 'to' in the future
@@ -190,8 +190,8 @@ async function monitorContract() {
             name,
             tokens[0],
             `${market.site}${process.env.CONTRACT_ADDRESS}/${tokens[0]}`,
-            image_png,
-            traits
+            image_png
+            // traits
           );
         }
       })
