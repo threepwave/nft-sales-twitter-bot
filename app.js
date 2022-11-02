@@ -80,7 +80,7 @@ async function monitorContract() {
           threshold: 1,
         };
         let tokens = [];
-        let totalPrice;
+        let totalPrice = 0;
 
         for (let log of receipt.logs) {
           const logAddress = log.address.toLowerCase();
