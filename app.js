@@ -45,8 +45,6 @@ async function monitorContract() {
 
         lastTransactionHash = transactionHash;
 
-        console.log(`Data received: ${transactionHash}`);
-
         // attempt to retrieve the receipt, sometimes not available straight away
         const receipt = await retry(
           async (bail) => {
@@ -109,19 +107,37 @@ async function monitorContract() {
             );
 
             console.log("decodedLogData");
-            console.log(decodedLogData);
-
-            console.log("market:");
-            console.log(market);
+              console.log(decodedLogData);
+              console.log(decodedLogData.amount)
+              console.log(decodedLogData.price)
 
             if (market.name.includes("Opensea")) {
-              totalPrice += getSeaportSalePrice(decodedLogData);
+              const salePrice = getSeaportSalePrice(decodedLogData);
+              console.log(salePrice);
+              totalPrice += salePrice;
             } else if (market.name.includes("X2Y2")) {
+              console.log(
+                ethers.utils.formatUnits(
+                  decodedLogData.amount,
+                  currency.decimals
+                )
+              );
+
               totalPrice += ethers.utils.formatUnits(
                 decodedLogData.amount,
                 currency.decimals
               );
             } else {
+              console.log(
+                ethers.utils.formatUnits(
+                  decodedLogData.price,
+                  currency.decimals
+                )
+              );
+                console.log(ethers.utils.formatUnits(
+                decodedLogData.price,
+                currency.decimals
+              );)
               totalPrice += ethers.utils.formatUnits(
                 decodedLogData.price,
                 currency.decimals
